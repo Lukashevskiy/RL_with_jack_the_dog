@@ -117,3 +117,21 @@ class StateIndexWrapper(Wrapper):
             else:
                 state_idx = _obs_to_state_idx(observation, self.env)
         return np.int32(state_idx), reward, terminated, truncated, info
+    
+    def get_all_states(self):
+        """Return all state names from the underlying env (e.g. 's0', ..., 's272').
+
+        Defined explicitly on this wrapper so it is visible when StateIndexWrapper
+        is the top-level env. If you use more wrappers on top (e.g. TimeLimit),
+        Gymnasium v1.0 will not forward missing attributes; use instead:
+          env.get_wrapper_attr('get_all_states')()
+        or
+          env.unwrapped.get_all_states()
+        """
+        return self.env.get_all_states()
+
+    def get_possible_actions(self, state):
+        """Forward to the underlying env. Accepts state name (e.g. 's0') or int index."""
+        if isinstance(state, (int, np.integer)):
+            state = f"s{int(state)}"
+        return self.env.get_possible_actions(state)
